@@ -1,5 +1,6 @@
 package com.innowise.payment.service;
 
+import com.innowise.payment.dto.OrderCreatedEvent;
 import com.innowise.payment.dto.PaymentRequestDto;
 import com.innowise.payment.dto.PaymentResponseDto;
 import com.innowise.payment.entity.Status;
@@ -16,4 +17,6 @@ public interface PaymentService {
     TotalSumView getTotalSumForUser(Long userId, Instant from, Instant to);
 
     TotalSumView getTotalSumForAllUsers(Instant from, Instant to);
+
+    void processPaymentForOrder(OrderCreatedEvent event);
 }

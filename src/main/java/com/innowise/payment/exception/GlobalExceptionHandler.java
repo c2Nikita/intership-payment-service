@@ -54,9 +54,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGenericException(Exception ex) {
+        Map<String, String> details = new HashMap<>();
+        details.put("exception", ex.getClass().getSimpleName());
+        details.put("error", ex.getMessage());
+
         return new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 INTERNAL_SERVER_ERROR_MESSAGE,
+                details,
                 Instant.now()
         );
     }
