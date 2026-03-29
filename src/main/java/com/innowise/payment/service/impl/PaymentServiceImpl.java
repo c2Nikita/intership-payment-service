@@ -1,6 +1,7 @@
 package com.innowise.payment.service.impl;
 
 import com.innowise.payment.client.RandomNumberClient;
+import com.innowise.payment.dto.PaymentEvent;
 import com.innowise.payment.dto.PaymentRequestDto;
 import com.innowise.payment.dto.PaymentResponseDto;
 import com.innowise.payment.entity.Payment;
@@ -9,6 +10,7 @@ import com.innowise.payment.entity.TotalSumView;
 import com.innowise.payment.exception.ValidationException;
 import com.innowise.payment.mapper.PaymentMapper;
 import com.innowise.payment.repository.PaymentRepository;
+import com.innowise.payment.kafka.PaymentProducer;
 import com.innowise.payment.service.PaymentService;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +28,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final RandomNumberClient randomNumberClient;
 
+    private final PaymentProducer paymentProducer;
+
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               PaymentMapper paymentMapper,
-                              RandomNumberClient randomNumberClient) {
+                              RandomNumberClient randomNumberClient,
+                              PaymentProducer paymentProducer) {
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
         this.randomNumberClient = randomNumberClient;
+        this.paymentProducer = paymentProducer;
     }
 
     @Override
@@ -51,6 +57,15 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         Payment savedPayment = paymentRepository.save(payment);
+
+        PaymentEvent event = new PaymentEvent(
+                savedPayment.getOrderId(),
+                savedPayment.getId(),
+                savedPayment.getStatus(),
+                savedPayment.getTimestamp()
+        );
+        paymentProducer.sendPaymentEvent(event);
+
         return paymentMapper.toDto(savedPayment);
     }
 
@@ -70,6 +85,7 @@ public class PaymentServiceImpl implements PaymentService {
     public TotalSumView getTotalSumForAllUsers(Instant from, Instant to) {
         return paymentRepository.getTotalSumByDateRange(from, to);
     }
+
 
     private void validateId(Long userId) {
         if(userId == null) {
