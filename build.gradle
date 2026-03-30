@@ -56,17 +56,21 @@ dependencies {
 
 	implementation 'com.innowise:security-spring-boot-starter:1.0.0'
 
+
 	testImplementation platform("org.testcontainers:testcontainers-bom:1.19.8")
 
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:mongodb'
 	testImplementation 'org.testcontainers:kafka'
 
-	testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock")
+	testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:5.0.0")
 	testImplementation 'org.awaitility:awaitility:4.2.0'
+
+	testImplementation("org.springframework:spring-test:7.0.4")
 
 
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
 }
 
 tasks.named('test') {
