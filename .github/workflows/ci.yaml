@@ -71,6 +71,6 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/order-server:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/payment-server:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
